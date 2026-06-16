@@ -21,7 +21,7 @@ function findUserBySponsorCode(code) { return getUsers().find(u => u.sponsorCode
 async function generateUniqueSponsorCode() { let code, exists = true; while (exists) { code = 'SAR-' + crypto.randomBytes(3).toString('hex').toUpperCase(); exists = !!findUserBySponsorCode(code); } return code; }
 
 const ADMIN_PASSWORD = 'admin123';
-const FEDAPAY_API_KEY = 'sk_sandbox_qvc_xPvQ6JpuUl7xPVkUha0X'; // sandbox
+const FEDAPAY_API_KEY = 'sk_sandbox_qvc_xPvQ6JpuUl7xPVkUha0X';
 
 function verifyAdminToken(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
@@ -84,12 +84,42 @@ app.post('/withdraw', async (req, res) => {
 
 app.get('/', (req, res) => {
     res.send(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sarawi</title><style>body{background:#f5f7fb;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:12px}.container{background:#fff;border-radius:28px;padding:20px;max-width:400px}.form-group{margin-bottom:14px}input,select{width:100%;padding:12px;border-radius:14px;border:1px solid #ccc}button{width:100%;background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:12px;margin-top:8px}.toggle-buttons{display:flex;gap:10px;margin-bottom:20px}.toggle-btn{flex:1;background:#f1f5f9;border-radius:40px;padding:8px;text-align:center;cursor:pointer}.active{background:#3b82f6;color:#fff}.hidden{display:none}.success-msg{background:#e6fffa;color:#234e52;padding:10px;border-radius:14px;margin-top:16px}.error-msg{background:#ffe6e6;color:#c00;padding:10px;border-radius:14px;margin-top:16px}</style></head>
-<body><div class="container"><h1>Inscription</h1><div class="toggle-buttons"><div class="toggle-btn active" id="showRegisterBtn">S'inscrire</div><div class="toggle-btn" id="showLoginBtn">Se connecter</div></div>
-<div id="registerForm"><div class="form-group"><label>Email Gmail</label><input type="email" id="regEmail"></div><div class="form-group"><label>Nom</label><input type="text" id="regNom"></div><div class="form-group"><label>Sexe</label><select id="regSexe"><option value="masculin">Masculin</option><option value="feminin">Féminin</option></select></div><div class="form-group"><label>Mot de passe (6+ lettres+chiffres)</label><input type="password" id="regPass"></div><div class="form-group"><label>Confirmer</label><input type="password" id="regConfirmPass"></div><div class="form-group"><label>Code promo</label><input type="text" id="regCode" placeholder="MITCHE99"></div><div class="form-group"><label>Code parrainage (optionnel)</label><input type="text" id="regSponsor"></div><div class="form-group"><label>Captcha: <span id="captchaOp1">5</span> + <span id="captchaOp2">3</span> = ?</label><input type="number" id="captchaAnswer"></div><button id="registerBtn">Créer mon compte</button><div id="switchToLogin">Déjà un compte ? Se connecter</div></div>
-<div id="loginForm" class="hidden"><div class="form-group"><label>Email</label><input type="email" id="loginEmail"></div><div class="form-group"><label>Mot de passe</label><input type="password" id="loginPass"></div><button id="loginBtn">Se connecter</button><div id="switchToRegister">Pas encore de compte ? S'inscrire</div></div>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sarawi</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
+body{background:#f5f7fb;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px}
+.container{background:#fff;border-radius:20px;padding:16px 14px;max-width:100%;width:100%;margin:10px auto}
+h1{font-size:22px;text-align:center}
+.sub{color:#5b6e8c;font-size:13px;text-align:center;margin-bottom:16px}
+.form-group{margin-bottom:12px}
+label{display:block;font-size:13px;font-weight:500;margin-bottom:4px}
+input,select{width:100%;padding:10px 12px;font-size:14px;border-radius:12px;border:1px solid #ccc;background:#fff}
+button{width:100%;background:#3b82f6;color:#fff;border:none;border-radius:40px;padding:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+.toggle-buttons{display:flex;gap:8px;margin-bottom:16px}
+.toggle-btn{flex:1;background:#f1f5f9;border-radius:40px;padding:8px;text-align:center;font-size:14px;cursor:pointer}
+.toggle-btn.active{background:#3b82f6;color:#fff}
+.hidden{display:none}
+.success-msg{background:#e6fffa;color:#234e52;padding:10px;border-radius:12px;margin-top:12px;font-size:13px}
+.error-msg{background:#ffe6e6;color:#c00;padding:10px;border-radius:12px;margin-top:12px;font-size:13px}
+.dashboard{margin-top:16px;border-top:1px solid #e2e8f0;padding-top:12px}
+</style>
+</head>
+<body><div class="container"><h1>Inscription</h1><div class="sub">Créez votre compte</div>
+<div class="toggle-buttons"><div class="toggle-btn active" id="showRegisterBtn">S'inscrire</div><div class="toggle-btn" id="showLoginBtn">Se connecter</div></div>
+<div id="registerForm"><div class="form-group"><label>Email Gmail</label><input type="email" id="regEmail" placeholder="exemple@gmail.com"></div>
+<div class="form-group"><label>Nom</label><input type="text" id="regNom" placeholder="Votre nom"></div>
+<div class="form-group"><label>Sexe</label><select id="regSexe"><option value="masculin">Masculin</option><option value="feminin">Féminin</option></select></div>
+<div class="form-group"><label>Mot de passe (6+ lettres+chiffres)</label><input type="password" id="regPass" placeholder="●●●●●●"></div>
+<div class="form-group"><label>Confirmer</label><input type="password" id="regConfirmPass" placeholder="●●●●●●"></div>
+<div class="form-group"><label>Code promo</label><input type="text" id="regCode" placeholder="MITCHE99"></div>
+<div class="form-group"><label>Code parrainage (optionnel)</label><input type="text" id="regSponsor" placeholder="SAR-XXXXX"></div>
+<div class="form-group"><label>Captcha: <span id="captchaOp1">5</span> + <span id="captchaOp2">3</span> = ?</label><input type="number" id="captchaAnswer" placeholder="Réponse"></div>
+<button id="registerBtn">Créer mon compte</button><div id="switchToLogin" style="text-align:center;margin-top:12px;font-size:14px">Déjà un compte ? <a href="#" style="color:#3b82f6;text-decoration:none">Se connecter</a></div></div>
+<div id="loginForm" class="hidden"><div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="exemple@gmail.com"></div>
+<div class="form-group"><label>Mot de passe</label><input type="password" id="loginPass" placeholder="●●●●●●"></div>
+<button id="loginBtn">Se connecter</button><div id="switchToRegister" style="text-align:center;margin-top:12px;font-size:14px">Pas encore de compte ? <a href="#" style="color:#3b82f6;text-decoration:none">S'inscrire</a></div></div>
 <div id="result"></div>
-<div id="dashboard" class="hidden"><h3>Mon compte</h3><p>Solde: <strong id="balance">0</strong> FCFA</p><p>Mon code parrainage: <strong id="mySponsorCode"></strong></p><div class="form-group"><label>Montant à retirer (FCFA)</label><input type="number" id="withdrawAmount"></div><button id="withdrawBtn">Retirer</button><div id="withdrawResult"></div></div></div>
+<div id="dashboard" class="hidden"><h3>Mon compte</h3><p>Solde: <strong id="balance">0</strong> FCFA</p><p>Mon code parrainage: <strong id="mySponsorCode"></strong></p><div class="form-group"><label>Montant à retirer (FCFA)</label><input type="number" id="withdrawAmount" placeholder="5000"></div><button id="withdrawBtn">Retirer</button><div id="withdrawResult"></div></div></div>
 <script>
 let operand1, operand2, captchaResult;
 function generateCaptcha(){ operand1 = Math.floor(Math.random()*10)+1; operand2 = Math.floor(Math.random()*10)+1; captchaResult = operand1+operand2; document.getElementById('captchaOp1').innerText=operand1; document.getElementById('captchaOp2').innerText=operand2; }
@@ -99,8 +129,8 @@ function getCurrentPosition(){ return new Promise((res,rej)=>navigator.geolocati
 const registerDiv=document.getElementById('registerForm'), loginDiv=document.getElementById('loginForm'), dashboardDiv=document.getElementById('dashboard');
 document.getElementById('showRegisterBtn').onclick=()=>{ registerDiv.classList.remove('hidden'); loginDiv.classList.add('hidden'); dashboardDiv.classList.add('hidden'); generateCaptcha(); };
 document.getElementById('showLoginBtn').onclick=()=>{ registerDiv.classList.add('hidden'); loginDiv.classList.remove('hidden'); dashboardDiv.classList.add('hidden'); };
-document.getElementById('switchToLogin').onclick=()=>document.getElementById('showLoginBtn').click();
-document.getElementById('switchToRegister').onclick=()=>document.getElementById('showRegisterBtn').click();
+document.getElementById('switchToLogin').onclick=(e)=>{ e.preventDefault(); document.getElementById('showLoginBtn').click(); };
+document.getElementById('switchToRegister').onclick=(e)=>{ e.preventDefault(); document.getElementById('showRegisterBtn').click(); };
 document.getElementById('registerBtn').onclick=async()=>{
     let email=document.getElementById('regEmail').value.trim(), nom=document.getElementById('regNom').value.trim(), sexe=document.getElementById('regSexe').value, pass=document.getElementById('regPass').value, confirm=document.getElementById('regConfirmPass').value, code=document.getElementById('regCode').value.trim(), sponsor=document.getElementById('regSponsor').value.trim();
     let captcha=parseInt(document.getElementById('captchaAnswer').value);
@@ -201,5 +231,4 @@ app.post('/login', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => console.log(`✅ Serveur prêt sur http://127.0.0.1:${PORT}`));
-
+app.listen(PORT, '0.0.0.0', () => console.log(`✅ Serveur Sarawi prêt sur http://127.0.0.1:${PORT}`));
